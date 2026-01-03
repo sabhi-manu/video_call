@@ -1,8 +1,13 @@
 import { useForm } from "react-hook-form";
 import "./auth.css";
 import { Link } from "react-router";
+import { useContext } from "react";
+import {AuthContext} from "../../contexts/AuthContext"
+
+
 
 export default function Register() {
+ const {RegisterHandler} = useContext(AuthContext)
   const {
     register,
     formState: { errors },
@@ -11,6 +16,8 @@ export default function Register() {
 
   const onSubmit = (data) => {
     console.log(data);
+    RegisterHandler(data)
+    
   };
 
   return (

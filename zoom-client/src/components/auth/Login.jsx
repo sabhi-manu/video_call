@@ -1,16 +1,22 @@
 import { useForm } from "react-hook-form";
 import "./auth.css";
 import { Link } from "react-router";
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function Login() {
+  const {logInHandler} = useContext(AuthContext)
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset
   } = useForm();
 
   const onSubmit = (data) => {
     console.log(data);
+    logInHandler(data)
+    reset()
   };
 
   return (

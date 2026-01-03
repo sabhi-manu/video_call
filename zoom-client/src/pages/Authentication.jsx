@@ -1,6 +1,10 @@
 
 import { Outlet } from 'react-router'
 import "../components/auth/auth.css"
+
+
+
+
 const Authentication = () => {
   return (
  <div className="auth-page">
