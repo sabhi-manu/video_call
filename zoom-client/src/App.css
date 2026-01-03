@@ -1,0 +1,109 @@
+/* Page background */
+.landingPageContainer {
+  width: 100vw;
+  height: 100vh;
+  background: url(../public/backgroudImage.png) ;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: white;
+  font-family: "Inter", sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Nav items */
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navList p {
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.navList p:hover {
+  opacity: 1;
+}
+
+/* HERO SECTION */
+.landingMainContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem 4rem;
+  height: calc(100vh - 90px);
+}
+
+.heroText {
+  max-width: 520px;
+}
+
+.heroText h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.heroText h1 span {
+  color: orange;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+}
+
+
+/* IMAGE */
+.heroImage img {
+  height: 60vh;
+  max-width: 100%;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: orange;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: darkorange;
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.btn-outline:hover {
+  background-color: white;
+  color: black;
+}
