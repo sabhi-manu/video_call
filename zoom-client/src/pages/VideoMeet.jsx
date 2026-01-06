@@ -15,21 +15,36 @@ const VideoMeet = () => {
 const socket = useRef(null);
   const localVideo = useRef()
   const remoteVideo = useRef()
+  const localStream = useRef(null);
   const pc = useRef(null)
   const peerId = useRef(null)
+  const [videoCode , setVideoCode ] = useState(true)
+  const [mediaReady, setMediaReady] = useState(false);
+const [isMuted, setIsMuted] = useState(false);
+const [isCameraOff, setIsCameraOff] = useState(false);
 
   const mediaPermission = async ()=>{
     const stream = await navigator.mediaDevices.getUserMedia({
       video:true,
       audio:true
     })
-    localVideo.current.srcObject = stream
+ 
+       localStream.current = stream;
+      localVideo.current.srcObject = stream;
+      setMediaReady(true);
   }
  useEffect(()=>{
   mediaPermission()
  },[])
 
+ useEffect(() => {
+  if (!videoCode && localVideo.current && localStream.current) {
+    localVideo.current.srcObject = localStream.current;
+  }
+}, [videoCode]);
+
  const connectVideo = ()=>{
+  setVideoCode(false)
    socket.current =  io(server_url);
    console.log("socket in frontend ==>",socket.current)
    socket.current.emit("join")
@@ -61,9 +76,27 @@ const socket = useRef(null);
       if(data.type === "candidate"){
       await pc.current.addIceCandidate(data.candidate)
       }
+    
    })
+
+    socket.current.on("peer-left", () => {
+      if (pc.current) {
+        pc.current.close();
+        pc.current = null;
+      }
+       if (remoteVideo.current) {
+    remoteVideo.current.srcObject = null;
+  }
+    });
  }
+
+
 const createPeer = ()=>{
+  if (pc.current) return;
+    if (!localVideo.current) {
+    console.warn("Local stream not ready yet");
+    return;
+  }
   pc.current = new RTCPeerConnection(peerConfigConnections)
 
   localVideo.current.srcObject.getTracks().forEach(track=>pc.current.addTrack(track,localVideo.current.srcObject))  
@@ -87,22 +120,99 @@ const createPeer = ()=>{
 
 }
 
+// leave button fuction 
+
+const leaveCall = () => {
+  // 1 Notify other peer
+  if (socket.current) {
+    socket.current.emit("leave");
+    socket.current.disconnect();
+    socket.current = null;
+  }
+
+  //  Close peer connection
+  if (pc.current) {
+    pc.current.close();
+    pc.current = null;
+  }
+
+  //  Stop local media tracks
+  if (localStream.current) {
+    localStream.current.getTracks().forEach(track => track.stop());
+    localStream.current = null;
+  }
+
+  // Clear videos
+  if (localVideo.current) localVideo.current.srcObject = null;
+  if (remoteVideo.current) remoteVideo.current.srcObject = null;
+
+  //  Reset state
+  setVideoCode(true);
+  setMediaReady(false);
+
+  mediaPermission();
+};
+
+// mute 
+
+const toggleMute = () => {
+  if (!localStream.current) return;
+
+  localStream.current.getAudioTracks().forEach(track => {
+    track.enabled = !track.enabled;
+    setIsMuted(!track.enabled);
+  });
+};
+
+// camera 
+const toggleCamera = () => {
+  if (!localStream.current) return;
+
+  localStream.current.getVideoTracks().forEach(track => {
+    track.enabled = !track.enabled;
+    setIsCameraOff(!track.enabled);
+  });
+};
 
 
   return (
     <div>
   
-      <div>
+{videoCode == true ?  <div>
         <h2>Enter into Lobby</h2>
         <input type="text"  />
-        <button onClick={connectVideo} >Connect</button>
+       <button onClick={connectVideo} disabled={!mediaReady}>
+  {mediaReady ? "Connect" : "Loading camera..."}
+</button>
         <br />
         <video ref={localVideo} autoPlay muted></video>
-      </div>
-      <div>
+        <br />
+        <button onClick={toggleMute}>
+  {isMuted ? "Unmute Mic" : "Mute Mic"}
+</button>
+<button onClick={toggleCamera}>
+  {isCameraOff ? "Turn Camera ON" : "Turn Camera OFF"}
+</button>
+      </div> :
+       <div>
+        <h2>current user</h2>
+        <video ref={localVideo} autoPlay muted></video>
         <h2>remote video</h2>
         <video ref={remoteVideo} autoPlay></video>
+        <br />
+        <button onClick={leaveCall} style={{ background: "red", color: "white" }}>
+  Leave Call
+</button>
+<button onClick={toggleMute}>
+  {isMuted ? "Unmute Mic" : "Mute Mic"}
+</button>
+<button onClick={toggleCamera}>
+  {isCameraOff ? "Turn Camera ON" : "Turn Camera OFF"}
+</button>
       </div>
+}
+     
+     
     
     </div>
   )

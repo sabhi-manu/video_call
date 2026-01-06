@@ -37,7 +37,23 @@ function connectSocket(server){
       data 
     })
    })
+   socket.on("disconnect",()=>{
+    const peer = user[socket.id]
+    if(peer){
+      io.to(peer).emit("peer-left")
+      delete user[peer]
+    }
+    delete user[socket.id]
+   })
 
+  socket.on("leave", () => {
+  const peer = user[socket.id];
+  if (peer) {
+    io.to(peer).emit("peer-left");
+    delete user[peer];
+  }
+  delete user[socket.id];
+});
  
   })
 
