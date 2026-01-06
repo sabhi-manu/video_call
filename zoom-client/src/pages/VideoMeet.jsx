@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {io} from "socket.io-client"
-
+import "./videoMeet.css"
 
 const peerConfigConnections = {
   "iceServers":[
@@ -178,38 +178,58 @@ const toggleCamera = () => {
   return (
     <div>
   
-{videoCode == true ?  <div>
-        <h2>Enter into Lobby</h2>
-        <input type="text"  />
-       <button onClick={connectVideo} disabled={!mediaReady}>
-  {mediaReady ? "Connect" : "Loading camera..."}
-</button>
-        <br />
-        <video ref={localVideo} autoPlay muted></video>
-        <br />
-        <button onClick={toggleMute}>
+{videoCode == true ? <div className="lobby">
+  <h2 className="title">Enter into Lobby</h2>
+
+  <input className="room-input" type="text" placeholder="Enter room code" />
+
+  <button
+    className="primary-btn"
+    onClick={connectVideo}
+    disabled={!mediaReady}
+  >
+    {mediaReady ? "Connect" : "Loading camera..."}
+  </button>
+
+  <video className="local-preview" ref={localVideo} autoPlay muted />
+
+  <div className="controls">
+    <button
+  className={isMuted ? "active" : ""}
+  onClick={toggleMute}
+>
   {isMuted ? "Unmute Mic" : "Mute Mic"}
 </button>
-<button onClick={toggleCamera}>
+
+<button
+  className={isCameraOff ? "active" : ""}
+  onClick={toggleCamera}
+>
   {isCameraOff ? "Turn Camera ON" : "Turn Camera OFF"}
 </button>
-      </div> :
-       <div>
-        <h2>current user</h2>
-        <video ref={localVideo} autoPlay muted></video>
-        <h2>remote video</h2>
-        <video ref={remoteVideo} autoPlay></video>
-        <br />
-        <button onClick={leaveCall} style={{ background: "red", color: "white" }}>
-  Leave Call
-</button>
-<button onClick={toggleMute}>
-  {isMuted ? "Unmute Mic" : "Mute Mic"}
-</button>
-<button onClick={toggleCamera}>
-  {isCameraOff ? "Turn Camera ON" : "Turn Camera OFF"}
-</button>
-      </div>
+  </div>
+</div>
+ :
+       <div className="call-container">
+  <video className="remote-video" ref={remoteVideo} autoPlay />
+
+  <video className="local-video" ref={localVideo} autoPlay muted />
+
+  <div className="control-bar">
+    <button onClick={toggleMute}>
+      {isMuted ? "Unmute" : "Mute"}
+    </button>
+
+    <button onClick={toggleCamera}>
+      {isCameraOff ? "Camera On" : "Camera Off"}
+    </button>
+
+    <button className="leave-btn" onClick={leaveCall}>
+      Leave
+    </button>
+  </div>
+</div>
+
 }
      
      
